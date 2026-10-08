@@ -1,0 +1,300 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>All Gravy Product Updates</title>
+<meta name="description" content="The latest features and improvements to the All Gravy platform for hospitality teams.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: changelog. Header + module filters, then a dated timeline (date rail left, update card right). Detail view swaps in via #slug. Single light brand theme, same tokens as the AI Colleague page. */
+:root{
+  --ink:#16133a;
+  --muted:#5d5a7e;
+  --paper:#fbfaff;
+  --panel:#f0eeff;
+  --brand:#4e5ffd;
+  --brand-deep:#3442d6;
+  --sun:#ffcf4a;
+  --sun-soft:#fff4d1;
+  --line:#e2dff5;
+  --white:#ffffff;
+  --display:"Bricolage Grotesque",ui-rounded,"Segoe UI",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:clamp(16px,4vw,32px)}
+h1,h2,h3{font-family:var(--display);line-height:1.06;letter-spacing:-.02em;text-wrap:balance;margin:0}
+p{margin:0}
+a{color:inherit}
+img{max-width:100%}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+[hidden]{display:none!important}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:20px}
+.logo{font-family:var(--display);font-weight:800;font-size:22px;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo span{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--brand);color:var(--white);font-size:16px}
+.nav-links{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.nav-links a{font-weight:600;font-size:15px;text-decoration:none;padding:8px 12px;border-radius:999px}
+.nav-links a:hover{background:var(--panel)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;text-decoration:none;border-radius:999px;padding:10px 18px;background:var(--brand);color:var(--white)!important}
+.btn:hover{background:var(--brand-deep)!important}
+
+/* HEADER */
+.head{padding-block:48px 28px;display:grid;gap:14px;max-width:680px}
+.eyebrow{display:inline-block;width:max-content;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);background:var(--panel);padding:6px 12px;border-radius:999px}
+.head h1{font-size:clamp(44px,6vw,68px);font-weight:800}
+.head p{font-size:19px;color:var(--muted)}
+
+/* FILTERS */
+.filters{display:flex;flex-wrap:wrap;gap:8px;padding-block:8px 36px;border-bottom:1px solid var(--line)}
+.filter{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--body);color:var(--ink);background:var(--white);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.filter:hover{border-color:var(--brand)}
+.filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.filter[aria-pressed="true"] svg{stroke:var(--white)}
+.filter svg,.tag svg{width:16px;height:16px;fill:none;stroke:var(--brand);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);background:var(--panel);border-radius:8px;padding:5px 10px}
+.tag.type{background:var(--sun-soft);color:#7a5600}
+
+/* TIMELINE */
+.timeline{list-style:none;margin:0;padding:40px 0 24px;display:grid;gap:56px}
+.entry{display:grid;grid-template-columns:150px 1fr;gap:32px}
+.when{position:relative;padding-top:4px}
+.when time{position:sticky;top:24px;display:block;font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.when small{display:block;color:var(--muted);font-size:13px;font-weight:500}
+.rail{position:absolute;right:-17px;top:10px;bottom:-60px;width:2px;background:var(--line)}
+.rail::before{content:"";position:absolute;left:-5px;top:0;width:12px;height:12px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px var(--paper)}
+.entry:last-child .rail{bottom:0}
+.card{display:grid;gap:16px;min-width:0}
+.hero-link{display:block;border-radius:20px;overflow:hidden;aspect-ratio:16/9;background:var(--panel)}
+.hero-link img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.hero-link:hover img{transform:scale(1.03)}
+.card h2{font-size:clamp(26px,3.2vw,34px);font-weight:800}
+.card h2 a{text-decoration:none}
+.card h2 a:hover{color:var(--brand)}
+.abstract{color:var(--muted);max-width:62ch;text-decoration:none;display:block}
+.more{font-weight:700;color:var(--brand);text-decoration:none;width:max-content}
+.more:hover{text-decoration:underline}
+.empty{padding:48px 0;color:var(--muted)}
+
+/* DETAIL */
+.detail{padding-block:32px 72px}
+.back{display:inline-flex;gap:6px;font-weight:600;font-size:15px;text-decoration:none;color:var(--muted)}
+.back:hover{color:var(--brand)}
+.article{max-width:720px;margin:28px auto 0;display:grid;gap:22px}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px;color:var(--muted);font-size:15px}
+.article h1{font-size:clamp(36px,5vw,54px);font-weight:800}
+.lead{font-size:21px;line-height:1.5;color:var(--ink)}
+.article .hero{border-radius:24px;overflow:hidden;aspect-ratio:16/9;margin-block:8px}
+.article .hero img{width:100%;height:100%;object-fit:cover;display:block}
+.article h3{font-size:26px;font-weight:800;margin-top:18px}
+.benefits{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.benefits li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.benefits li::before{content:"";width:24px;height:24px;margin-top:2px;border-radius:50%;background:var(--sun) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316133a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/16px no-repeat}
+.benefits b{font-weight:700}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:s}
+.steps li{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:20px 22px 20px 70px;position:relative;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:20px;top:20px;width:34px;height:34px;border-radius:50%;background:var(--brand);color:var(--white);display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.steps b{display:block;font-size:18px}
+.steps span{color:var(--muted)}
+.note{background:var(--panel);border-radius:18px;padding:20px 22px}
+.note b{display:block;margin-bottom:4px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
+.btn-ghost{display:inline-flex;font-weight:700;font-size:15px;text-decoration:none;border-radius:999px;padding:10px 18px;border:2px solid var(--line);background:var(--white)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.pager{max-width:720px;margin:48px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.pager a{text-decoration:none;display:grid;gap:2px;max-width:48%}
+.pager a small{color:var(--muted);font-size:13px}
+.pager a b{font-family:var(--display);font-size:18px}
+.pager a:hover b{color:var(--brand)}
+.pager .next{text-align:right;margin-left:auto}
+
+footer{border-top:1px solid var(--line);padding-block:32px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--muted);font-size:14px}
+
+@media (max-width:720px){
+  .entry{grid-template-columns:1fr;gap:12px}
+  .rail{display:none}
+  .when time{position:static;display:flex;gap:8px;align-items:baseline}
+  .nav-links a:not(.btn){display:none}
+  .pager a{max-width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="nav">
+    <a class="logo" href="#"><span>G</span>All Gravy</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="https://www.allgravy.com/">Website</a>
+      <a href="https://account.allgravy.com/signin">Log in</a>
+      <a class="btn" href="https://www.allgravy.com/book-meeting">Book a demo</a>
+    </nav>
+  </header>
+
+  <!-- LIST VIEW -->
+  <main id="list">
+    <div class="head">
+      <span class="eyebrow">Changelog</span>
+      <h1>Product updates</h1>
+      <p>New features and improvements across the All Gravy platform, newest first.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter by module" id="filters"></div>
+    <ol class="timeline" id="timeline"></ol>
+    <p class="empty" id="empty" hidden>No updates for this module yet. Check back soon.</p>
+  </main>
+
+  <!-- DETAIL VIEW -->
+  <main id="detail" class="detail" hidden></main>
+
+  <footer>
+    <span>© 2026 All Gravy ApS · Struenseegade 15A, 2200 Copenhagen</span>
+    <a href="https://www.allgravy.com/about-us/privacy-policy">Cookies and privacy</a>
+  </footer>
+</div>
+
+<script>
+/* Module icons, matching the All Gravy platform menu */
+var ICONS={
+  "Communications":'<svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M17 9h3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg>',
+  "Learning":'<svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg>',
+  "Artificial Intelligence":'<svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><path d="M2 20c.8-3.4 3.2-5 6-5s5.2 1.6 6 5"/><path d="M17 3v4M15 5h4M19 11v3M17.5 12.5h3"/></svg>',
+  "Operations":'<svg viewBox="0 0 24 24"><circle cx="11" cy="13" r="8"/><path d="M8 13l3 3 9-11"/></svg>',
+  "Scheduling":'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg>'
+};
+var MODULES=["Communications","Learning","Artificial Intelligence","Operations","Scheduling"];
+
+/* Updates, newest first. To add one: copy an object, give it a new slug, date and image. */
+var UPDATES=[
+  {
+    slug:"ai-colleague",
+    date:"2026-08-06",
+    type:"New feature",
+    modules:["Artificial Intelligence"],
+    image:"hero-ai-colleague.jpg",
+    imageAlt:"A bartender checks the All Gravy app on his phone during a shift",
+    title:"Meet your AI Colleague: instant answers on every shift",
+    abstract:"Your team can now ask questions in plain words and get the right answer in seconds, straight from your own handbooks, menus and policies. Anything it can't answer goes to a manager.",
+    lead:"Never keep a guest waiting on “let me check.” From today, every employee has a colleague who knows your handbooks, menus and policies by heart, and is there on every shift.",
+    benefits:[
+      ["Confident staff, happier guests.","Allergens, menu items, payment options: your team gets the answer on the spot, without leaving the floor to find a manager."],
+      ["Managers get their time back.","No more answering the same question fifty times a week. Save up to 80% of the time spent on routine questions."],
+      ["One answer, every location.","Update a policy or menu once, and every answer reflects it straight away."],
+      ["See what your team needs to learn.","The questions people ask most show you where to focus your training."]
+    ],
+    steps:[
+      ["Ask in plain words","Open the AI Colleague in the All Gravy app and type a question, like “Does the halloumi wrap contain nuts?”"],
+      ["Get a short answer, with a source","It searches your own content and replies in a sentence, with a link to where the answer came from."],
+      ["Unknowns go to a human","If the answer isn't in your content, it passes the question to a manager and flags what's missing. Add it once, and next time it can answer."]
+    ],
+    note:["Make it your own","Choose its name and avatar, and train it to speak in your brand voice. Next up: doing, not just answering, like swapping a shift or booking time off."],
+    link:"https://www.allgravy.com/platform/ai-colleague"
+  },
+  {
+    slug:"learning-platform",
+    date:"2026-07-09",
+    type:"New feature",
+    modules:["Learning","Artificial Intelligence"],
+    image:"hero-learning-platform.jpg",
+    imageAlt:"The All Gravy Learning Platform on a phone, showing a quiz question and earned badges",
+    title:"The new Learning Platform: training your team actually finishes",
+    abstract:"Bite-sized lessons on any phone, games and quizzes, and Duolingo-style learning journeys. Build a course in minutes with help from AI, and keep track of mandatory training in one place.",
+    lead:"Get new starters up to speed faster and keep every location compliant, with training that feels more like a game than a chore.",
+    benefits:[
+      ["New starters ramp up faster.","A visual learning journey shows everyone exactly what to learn next and how far they've come."],
+      ["Training fits between shifts.","Lessons take 5 to 15 minutes and work on any phone, so nobody has to block out a training day."],
+      ["Anyone can share what they know.","Your best chef or bar manager can build a course without technical skills."],
+      ["Always audit-ready.","An always-updated overview of mandatory training and completion rates means nothing slips through."]
+    ],
+    steps:[
+      ["Build a course","Drag and drop lessons, quizzes and puzzles into a course. The AI Assistant helps you draft the content."],
+      ["Your team learns on the go","Each person follows their own learning journey, with results and tips straight after every game, and achievements to unlock along the way."],
+      ["Track progress and compliance","See completion rates for mandatory training across teams and locations, and follow up where it's needed."]
+    ],
+    note:["Works with your onboarding","Pair learning journeys with onboarding so new starters get the right courses from day one."],
+    link:"https://www.allgravy.com/platform/lms"
+  }
+];
+
+var fmt=function(iso){var d=new Date(iso+"T12:00:00");return d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+function tags(u){
+  return '<div class="tags">'+u.modules.map(function(m){return '<span class="tag">'+ICONS[m]+esc(m)+'</span>'}).join("")+'<span class="tag type">'+esc(u.type)+'</span></div>';
+}
+
+/* Filters */
+var active="All";
+var filtersEl=document.getElementById("filters");
+["All"].concat(MODULES).forEach(function(m){
+  var b=document.createElement("button");
+  b.className="filter"; b.type="button"; b.id="f-"+m.toLowerCase().replace(/\s+/g,"-");
+  b.innerHTML=(ICONS[m]||"")+esc(m==="All"?"All updates":m);
+  b.setAttribute("aria-pressed",m===active);
+  b.onclick=function(){active=m;[].forEach.call(filtersEl.children,function(x){x.setAttribute("aria-pressed",x===b)});renderList()};
+  filtersEl.appendChild(b);
+});
+
+function renderList(){
+  var list=UPDATES.filter(function(u){return active==="All"||u.modules.indexOf(active)>-1});
+  document.getElementById("timeline").innerHTML=list.map(function(u){
+    var href="#"+u.slug;
+    return '<li class="entry">'+
+      '<div class="when"><time datetime="'+u.date+'">'+fmt(u.date)+'</time><span class="rail" aria-hidden="true"></span></div>'+
+      '<article class="card">'+
+        '<a class="hero-link" href="'+href+'" tabindex="-1" aria-hidden="true"><img src="'+u.image+'" alt="" loading="lazy"></a>'+
+        tags(u)+
+        '<h2><a href="'+href+'">'+esc(u.title)+'</a></h2>'+
+        '<a class="abstract" href="'+href+'" tabindex="-1">'+esc(u.abstract)+'</a>'+
+        '<a class="more" href="'+href+'">Read the update →</a>'+
+      '</article></li>';
+  }).join("");
+  document.getElementById("empty").hidden=list.length>0;
+}
+
+function renderDetail(u){
+  var i=UPDATES.indexOf(u), newer=UPDATES[i-1], older=UPDATES[i+1];
+  document.getElementById("detail").innerHTML=
+    '<a class="back" href="#">← All updates</a>'+
+    '<article class="article">'+
+      '<div class="meta"><time datetime="'+u.date+'">'+fmt(u.date)+'</time>'+tags(u)+'</div>'+
+      '<h1>'+esc(u.title)+'</h1>'+
+      '<p class="lead">'+esc(u.lead)+'</p>'+
+      '<div class="hero"><img src="'+u.image+'" alt="'+esc(u.imageAlt)+'"></div>'+
+      '<h3>What this means for you</h3>'+
+      '<ul class="benefits">'+u.benefits.map(function(b){return '<li><span><b>'+esc(b[0])+'</b> '+esc(b[1])+'</span></li>'}).join("")+'</ul>'+
+      '<h3>How it works</h3>'+
+      '<ol class="steps">'+u.steps.map(function(s){return '<li><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></li>'}).join("")+'</ol>'+
+      '<div class="note"><b>'+esc(u.note[0])+'</b>'+esc(u.note[1])+'</div>'+
+      '<div class="cta"><a class="btn" href="https://www.allgravy.com/book-meeting">Book a demo</a><a class="btn-ghost" href="'+u.link+'">Learn more</a></div>'+
+    '</article>'+
+    '<nav class="pager" aria-label="More updates">'+
+      (older?'<a class="prev" href="#'+older.slug+'"><small>← Older</small><b>'+esc(older.title)+'</b></a>':'')+
+      (newer?'<a class="next" href="#'+newer.slug+'"><small>Newer →</small><b>'+esc(newer.title)+'</b></a>':'')+
+    '</nav>';
+}
+
+function route(){
+  var slug=location.hash.replace("#","");
+  var u=UPDATES.filter(function(x){return x.slug===slug})[0];
+  document.getElementById("list").hidden=!!u;
+  document.getElementById("detail").hidden=!u;
+  if(u){renderDetail(u);document.title=u.title+" · All Gravy Product Updates";window.scrollTo(0,0)}
+  else{document.title="All Gravy Product Updates"}
+}
+renderList(); route();
+addEventListener("hashchange",route);
+</script>
+</body>
+</html>
+
+</body></html>
