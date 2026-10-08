@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Changelog Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: editor on the left, sticky live preview on the right, save bar at the bottom. Same tokens as the changelog. */
+:root{
+  --ink:#16133a; --muted:#5d5a7e; --paper:#fbfaff; --panel:#f0eeff; --brand:#4e5ffd; --brand-deep:#3442d6;
+  --sun:#ffcf4a; --sun-soft:#fff4d1; --line:#e2dff5; --white:#ffffff; --ok:#1f8a4c; --warn:#a15c00; --bad:#c4314b;
+  --display:"Bricolage Grotesque",ui-rounded,"Segoe UI",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:96px}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;line-height:1.1;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+[hidden]{display:none!important}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px clamp(16px,3vw,32px);border-bottom:1px solid var(--line);background:var(--white)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:20px}
+.brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--brand);color:var(--white);font-style:normal;font-size:15px}
+.brand small{font-family:var(--body);font-weight:600;font-size:13px;color:var(--brand);background:var(--panel);padding:4px 10px;border-radius:999px}
+.picker{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select,input[type=text],input[type=url],input[type=date],textarea{font:inherit;color:var(--ink);background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+select{width:auto;min-width:220px;max-width:100%}
+textarea{resize:vertical;min-height:84px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(78,95,253,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 15px var(--body);border-radius:999px;padding:10px 18px;border:2px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--brand);color:var(--white)}
+.btn-primary:hover{background:var(--brand-deep)}
+.btn-ghost{background:var(--white);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.btn-danger{background:var(--white);border-color:#f3c9d1;color:var(--bad)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.link-btn{background:none;border:0;color:var(--brand);font:600 14px var(--body);cursor:pointer;padding:4px 0}
+.link-btn:hover{text-decoration:underline}
+.x{background:none;border:0;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:6px;border-radius:8px}
+.x:hover{background:var(--panel);color:var(--bad)}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);padding:24px clamp(16px,3vw,32px);max-width:1440px;margin:0 auto}
+.form{display:grid;gap:18px;min-width:0}
+.sect{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:14px}
+.sect-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sect h2{font-size:20px;font-weight:800}
+.sect .why{font-size:13px;color:var(--muted)}
+.step-n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--panel);color:var(--brand);font:800 13px var(--display);margin-right:8px;vertical-align:2px}
+label{display:grid;gap:6px;font-weight:600;font-size:14px}
+label .hint{font-weight:500;color:var(--muted);font-size:13px}
+.row2{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.count{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.count.over{color:var(--warn);font-weight:700}
+
+/* Image drop */
+.drop{border:2px dashed var(--line);border-radius:16px;background:var(--paper);display:grid;place-items:center;text-align:center;padding:24px;cursor:pointer;min-height:180px;position:relative;overflow:hidden}
+.drop:hover,.drop.over{border-color:var(--brand);background:var(--panel)}
+.drop b{font-size:15px}
+.drop span{font-size:13px;color:var(--muted)}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop.has{aspect-ratio:16/9;min-height:0;padding:0;border-style:solid}
+.spec{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+.spec span{background:var(--panel);border-radius:8px;padding:4px 10px}
+.check{font-size:13px;font-weight:600;display:flex;gap:8px;align-items:flex-start}
+.check.ok{color:var(--ok)} .check.warn{color:var(--warn)}
+.img-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Module chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--body);color:var(--ink);background:var(--white);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.chip svg{width:16px;height:16px;fill:none;stroke:var(--brand);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.chip[aria-pressed="true"] svg{stroke:var(--white)}
+
+/* Repeatable rows */
+.rows{display:grid;gap:10px}
+.rrow{display:grid;grid-template-columns:28px minmax(0,1fr) 32px;gap:10px;align-items:start;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px}
+.rrow .n{width:26px;height:26px;border-radius:50%;background:var(--brand);color:var(--white);display:grid;place-items:center;font:800 13px var(--display);margin-top:8px}
+.rrow .n.tick{background:var(--sun);color:var(--ink)}
+.rrow .fields{display:grid;gap:8px}
+.rrow textarea{min-height:60px}
+
+/* Buttons section */
+.toggle{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.toggle input{width:18px;height:18px;accent-color:var(--brand)}
+
+/* Preview */
+.preview{position:sticky;top:16px;align-self:start;min-width:0;display:grid;gap:12px;max-height:calc(100vh - 120px)}
+.pv-tabs{display:flex;gap:6px;background:var(--white);border:1px solid var(--line);border-radius:999px;padding:4px;width:max-content}
+.pv-tabs button{font:600 14px var(--body);border:0;background:none;border-radius:999px;padding:8px 14px;cursor:pointer;color:var(--muted)}
+.pv-tabs button[aria-selected="true"]{background:var(--ink);color:var(--white)}
+.pv-frame{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:24px;overflow:auto;min-height:300px}
+.pv-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* Preview content: mirrors the changelog styles */
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);background:var(--panel);border-radius:8px;padding:5px 10px}
+.tag svg{width:16px;height:16px;fill:none;stroke:var(--brand);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tag.type{background:var(--sun-soft);color:#7a5600}
+.pv-card{display:grid;gap:14px}
+.pv-when{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.pv-hero{border-radius:16px;overflow:hidden;aspect-ratio:16/9;background:linear-gradient(135deg,var(--panel),#e6e3ff);display:grid;place-items:center;color:var(--muted);font-size:14px}
+.pv-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.pv-card h2{font-size:26px;font-weight:800}
+.pv-card .abs{color:var(--muted)}
+.pv-more{font-weight:700;color:var(--brand)}
+.pv-article{display:grid;gap:18px}
+.pv-article .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted);font-size:14px}
+.pv-article h1{font-size:34px;font-weight:800}
+.pv-article .lead{font-size:18px}
+.pv-article h3{font-size:21px;font-weight:800;margin-top:8px}
+.benefits{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.benefits li{display:grid;grid-template-columns:24px 1fr;gap:10px}
+.benefits li::before{content:"";width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--sun) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316133a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/14px no-repeat}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
+.steps li{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 58px;position:relative;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--brand);color:var(--white);display:grid;place-items:center;font:800 14px var(--display)}
+.steps b{display:block}
+.steps span{color:var(--muted)}
+.note{background:var(--panel);border-radius:14px;padding:16px 18px}
+.note b{display:block}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.pv-btn{display:inline-flex;font-weight:700;font-size:14px;border-radius:999px;padding:9px 16px;background:var(--brand);color:var(--white)}
+.pv-btn.ghost{background:var(--white);color:var(--ink);border:2px solid var(--line)}
+.ph{color:#b3b0cc;font-style:italic}
+
+/* Save bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--white);border-top:1px solid var(--line);padding:12px clamp(16px,3vw,32px) calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;z-index:10}
+.status{font-size:14px;color:var(--muted);min-width:0}
+.status.bad{color:var(--bad);font-weight:600}
+.status.good{color:var(--ok);font-weight:600}
+.bar .actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Publish steps dialog */
+.sheet{position:fixed;inset:0;background:rgba(22,19,58,.45);display:grid;place-items:center;padding:16px;z-index:20}
+.sheet-box{background:var(--white);border-radius:24px;padding:28px;max-width:560px;width:100%;display:grid;gap:16px;max-height:90vh;overflow:auto}
+.sheet-box h2{font-size:26px;font-weight:800}
+.sheet-box ol{margin:0;padding-left:20px;display:grid;gap:10px}
+.sheet-box code{background:var(--panel);border-radius:6px;padding:2px 6px;font-size:14px}
+.json-out{font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:160px}
+
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  .preview{position:static;max-height:none}
+}
+@media (max-width:520px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><i>G</i>All Gravy <small>Changelog admin</small></div>
+  <div class="picker">
+    <label for="entryPick" class="sr" style="position:absolute;left:-9999px">Choose an update to edit</label>
+    <select id="entryPick" aria-label="Choose an update to edit"></select>
+    <button class="btn btn-primary btn-sm" id="newBtn" type="button">+ New update</button>
+    <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">View changelog</a>
+  </div>
+</header>
+
+<div class="layout">
+  <form class="form" id="form" novalidate>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Basics</h2><span class="why">Shown on the timeline and the update page</span></div>
+      <div class="row2">
+        <label>Title
+          <input type="text" id="f-title" maxlength="90" placeholder="e.g. Meet your AI Colleague: instant answers on every shift">
+        </label>
+        <label>Release date
+          <input type="date" id="f-date">
+        </label>
+      </div>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Hero image</h2><span class="why">Top of the card and the update page</span></div>
+      <div class="spec"><span><b>2000 × 1125 px</b> (16:9)</span><span>JPG</span><span>Under 400 KB</span><span>Keep key content away from the edges</span></div>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose hero image">
+        <div id="dropText"><b>Drop an image here, or click to choose</b><br><span>Any size works. You can download a correctly sized copy below.</span></div>
+        <img id="dropImg" alt="" hidden>
+      </div>
+      <input type="file" id="f-file" accept="image/*" hidden>
+      <div id="imgCheck"></div>
+      <div class="img-actions" id="imgActions" hidden>
+        <button class="btn btn-ghost btn-sm" type="button" id="dlImg">Download 2000 × 1125 JPG</button>
+        <button class="link-btn" type="button" id="replaceImg">Replace image</button>
+      </div>
+      <label>Image description <span class="hint">For screen readers. Describe what's in the picture.</span>
+        <input type="text" id="f-alt" placeholder="e.g. A bartender checks the All Gravy app during a shift">
+      </label>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Abstract</h2><span class="why">The short summary on the timeline. Lead with the value.</span></div>
+      <textarea id="f-abstract" rows="3" placeholder="What can people do now that they couldn't before, and why does it matter?"></textarea>
+      <div class="count" id="c-abstract"></div>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Module tags</h2><span class="why">Pick every module the update belongs to</span></div>
+      <div class="chips" id="f-modules" role="group" aria-label="Modules"></div>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Benefits</h2><span class="why">"What this means for you". Outcomes, not features.</span></div>
+      <div class="rows" id="benefits"></div>
+      <button class="link-btn" type="button" id="addBenefit">+ Add a benefit</button>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Features</h2><span class="why">"How it works". Steps, in the order people use them.</span></div>
+      <div class="rows" id="steps"></div>
+      <button class="link-btn" type="button" id="addStep">+ Add a step</button>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Note on extras</h2><span class="why">Optional. Settings, related features or what's next.</span></div>
+      <label>Heading <input type="text" id="f-noteH" maxlength="60" placeholder="e.g. Make it your own"></label>
+      <label>Text <textarea id="f-noteT" rows="2" placeholder="One or two sentences."></textarea></label>
+    </section>
+
+    <section class="sect">
+      <div class="sect-h"><h2>Buttons</h2><span class="why">At the bottom of the update page</span></div>
+      <label class="toggle"><input type="checkbox" checked disabled> Book a demo <span class="hint">(always shown)</span></label>
+      <label class="toggle"><input type="checkbox" id="f-hasLink"> Learn more</label>
+      <label id="linkWrap" hidden>Learn more link
+        <input type="url" id="f-link" placeholder="https://www.allgravy.com/platform/…">
+      </label>
+    </section>
+
+    <section class="sect" id="dangerZone" hidden>
+      <div class="sect-h"><h2>Remove this update</h2></div>
+      <div id="delWrap"><button class="btn btn-danger btn-sm" type="button" id="delBtn">Delete update</button></div>
+    </section>
+  </form>
+
+  <aside class="preview" aria-label="Live preview">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="pv-label">Live preview</span>
+      <div class="pv-tabs" role="tablist">
+        <button role="tab" id="tab-card" aria-selected="true" type="button">Timeline card</button>
+        <button role="tab" id="tab-page" aria-selected="false" type="button">Update page</button>
+      </div>
+    </div>
+    <div class="pv-frame" id="pv"></div>
+  </aside>
+</div>
+
+<div class="bar">
+  <p class="status" id="status" aria-live="polite">Loading updates…</p>
+  <div class="actions">
+    <button class="btn btn-ghost" type="button" id="resetBtn">Discard changes</button>
+    <button class="btn btn-primary" type="button" id="saveBtn">Save update</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle">Ready to publish</h2>
+    <p id="sheetIntro">Your update is saved into a new <code>updates.json</code>. Put it live in three steps:</p>
+    <ol id="sheetSteps"></ol>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" type="button" id="dlJson">Download updates.json</button>
+      <button class="btn btn-primary btn-sm" type="button" id="dlImg2" hidden>Download hero image</button>
+      <button class="btn btn-ghost btn-sm" type="button" id="cpJson">Copy JSON</button>
+    </div>
+    <label>updates.json <textarea class="json-out" id="jsonOut" readonly></textarea></label>
+    <button class="btn btn-ghost" type="button" id="closeSheet">Done</button>
+  </div>
+</div>
+
+<script>
+var ICONS={
+  "Communications":'<svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M17 9h3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg>',
+  "Learning":'<svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg>',
+  "Artificial Intelligence":'<svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><path d="M2 20c.8-3.4 3.2-5 6-5s5.2 1.6 6 5"/><path d="M17 3v4M15 5h4M19 11v3M17.5 12.5h3"/></svg>',
+  "Operations":'<svg viewBox="0 0 24 24"><circle cx="11" cy="13" r="8"/><path d="M8 13l3 3 9-11"/></svg>',
+  "Scheduling":'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg>'
+};
+var MODULES=Object.keys(ICONS);
+var REC={w:2000,h:1125,kb:400};
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+var fmt=function(iso){if(!iso)return"";var d=new Date(iso+"T12:00:00");return d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})};
+var slugify=function(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").split("-").slice(0,6).join("-")};
+var today=function(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+
+var UPDATES=[], editing=null, img={src:"",file:null,w:0,h:0,kb:0,name:""}, selectedModules=[], view="card", dirty=false;
+
+/* ---------- module chips ---------- */
+MODULES.forEach(function(m){
+  var b=document.createElement("button");b.type="button";b.className="chip";b.id="mod-"+slugify(m);
+  b.innerHTML=ICONS[m]+esc(m);b.setAttribute("aria-pressed","false");
+  b.onclick=function(){var i=selectedModules.indexOf(m);if(i>-1)selectedModules.splice(i,1);else selectedModules.push(m);syncChips();changed()};
+  $("f-modules").appendChild(b);
+});
+function syncChips(){[].forEach.call($("f-modules").children,function(b,i){b.setAttribute("aria-pressed",selectedModules.indexOf(MODULES[i])>-1)})}
+
+/* ---------- repeatable rows ---------- */
+var rowSeq=0;
+function addRow(listId,kind,a,b){
+  var list=$(listId); if(list.children.length>=6)return;
+  var id=kind+(++rowSeq), r=document.createElement("div"); r.className="rrow";
+  var benefit=kind==="b";
+  r.innerHTML='<span class="n'+(benefit?' tick':'')+'" aria-hidden="true">'+(benefit?'✓':'')+'</span>'+
+    '<div class="fields">'+
+      '<input type="text" id="'+id+'-a" maxlength="70" placeholder="'+(benefit?'Outcome, e.g. Managers get their time back.':'Step, e.g. Ask in plain words')+'" aria-label="'+(benefit?'Benefit headline':'Step title')+'">'+
+      '<textarea id="'+id+'-b" rows="2" placeholder="'+(benefit?'One sentence that backs it up.':'What happens in this step, from the user\'s side.')+'" aria-label="'+(benefit?'Benefit detail':'Step description')+'"></textarea>'+
+    '</div><button type="button" class="x" aria-label="Remove">×</button>';
+  r.querySelector("input").value=a||""; r.querySelector("textarea").value=b||"";
+  r.querySelector(".x").onclick=function(){if(list.children.length>1){r.remove();numberRows();changed()}};
+  r.addEventListener("input",changed);
+  list.appendChild(r); numberRows();
+}
+function numberRows(){
+  [].forEach.call($("steps").children,function(r,i){r.querySelector(".n").textContent=i+1});
+  $("addBenefit").hidden=$("benefits").children.length>=6;
+  $("addStep").hidden=$("steps").children.length>=6;
+}
+function readRows(listId){
+  return [].map.call($(listId).children,function(r){return[r.querySelector("input").value.trim(),r.querySelector("textarea").value.trim()]}).filter(function(x){return x[0]||x[1]});
+}
+$("addBenefit").onclick=function(){addRow("benefits","b");changed()};
+$("addStep").onclick=function(){addRow("steps","s");changed()};
+
+/* ---------- image ---------- */
+function pickFile(){$("f-file").click()}
+$("drop").onclick=pickFile; $("replaceImg").onclick=pickFile;
+$("drop").onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();pickFile()}};
+["dragenter","dragover"].forEach(function(t){$("drop").addEventListener(t,function(e){e.preventDefault();$("drop").classList.add("over")})});
+["dragleave","drop"].forEach(function(t){$("drop").addEventListener(t,function(e){e.preventDefault();$("drop").classList.remove("over")})});
+$("drop").addEventListener("drop",function(e){var f=e.dataTransfer.files[0];if(f)loadFile(f)});
+$("f-file").onchange=function(){if(this.files[0])loadFile(this.files[0]);this.value=""};
+function loadFile(f){
+  if(!/^image\//.test(f.type)){setStatus("That file isn't an image. Choose a JPG or PNG.","bad");return}
+  var url=URL.createObjectURL(f), im=new Image();
+  im.onload=function(){img={src:url,file:f,w:im.naturalWidth,h:im.naturalHeight,kb:Math.round(f.size/1024),name:""};showImage();changed()};
+  im.src=url;
+}
+function showImage(){
+  var has=!!img.src;
+  $("drop").classList.toggle("has",has); $("dropImg").hidden=!has; $("dropText").hidden=has;
+  if(has)$("dropImg").src=img.src;
+  $("imgActions").hidden=!img.file;
+  var c=$("imgCheck"); c.innerHTML="";
+  if(!img.file){ if(has)c.innerHTML='<p class="check ok">Using <code>'+esc(img.name)+'</code> from the changelog.</p>'; return }
+  var ratio=img.w/img.h, okRatio=Math.abs(ratio-16/9)<0.02, okSize=img.w>=REC.w, okKb=img.kb<=REC.kb, msgs=[];
+  msgs.push('<p class="check '+(okSize?'ok':'warn')+'">'+(okSize?'✓':'!')+' '+img.w+' × '+img.h+' px'+(okSize?'':': smaller than 2000 px wide, so it may look soft')+'</p>');
+  msgs.push('<p class="check '+(okRatio?'ok':'warn')+'">'+(okRatio?'✓ 16:9':'! Not 16:9. The edges will be cropped. Check the preview.')+'</p>');
+  msgs.push('<p class="check '+(okKb?'ok':'warn')+'">'+(okKb?'✓ ':'! ')+img.kb+' KB'+(okKb?'':'. Use the download button for a lighter copy.')+'</p>');
+  c.innerHTML=msgs.join("");
+}
+function imageName(){return "hero-"+(slugify($("f-title").value)||"update")+".jpg"}
+$("dlImg").onclick=function(){
+  var src=new Image(); src.onload=function(){
+    var cv=document.createElement("canvas");cv.width=REC.w;cv.height=REC.h;
+    var s=Math.max(REC.w/src.naturalWidth,REC.h/src.naturalHeight),dw=src.naturalWidth*s,dh=src.naturalHeight*s;
+    var ctx=cv.getContext("2d");ctx.imageSmoothingQuality="high";ctx.drawImage(src,(REC.w-dw)/2,(REC.h-dh)/2,dw,dh);
+    cv.toBlob(function(b){download(b,imageName());setStatus("Downloaded "+imageName()+". Upload it to the repo with updates.json.","good")},"image/jpeg",0.82);
+  }; src.src=img.src;
+};
+
+/* ---------- buttons ---------- */
+$("f-hasLink").onchange=function(){$("linkWrap").hidden=!this.checked;changed()};
+
+/* ---------- read / fill form ---------- */
+function blank(){return{slug:"",date:today(),type:"New feature",modules:[],image:"",imageAlt:"",title:"",abstract:"",benefits:[["",""],["",""],["",""]],steps:[["",""],["",""],["",""]],note:["",""],link:""}}
+function fill(u){
+  $("f-title").value=u.title||""; $("f-date").value=u.date||today();
+  $("f-alt").value=u.imageAlt||""; $("f-abstract").value=u.abstract||"";
+  selectedModules=(u.modules||[]).slice(); syncChips();
+  $("benefits").innerHTML=""; (u.benefits&&u.benefits.length?u.benefits:[["",""]]).forEach(function(b){addRow("benefits","b",b[0],b[1])});
+  $("steps").innerHTML=""; (u.steps&&u.steps.length?u.steps:[["",""]]).forEach(function(s){addRow("steps","s",s[0],s[1])});
+  $("f-noteH").value=(u.note&&u.note[0])||""; $("f-noteT").value=(u.note&&u.note[1])||"";
+  $("f-hasLink").checked=!!u.link; $("linkWrap").hidden=!u.link; $("f-link").value=u.link||"";
+  img={src:u.image||"",file:null,w:0,h:0,kb:0,name:u.image||""}; showImage();
+  $("dangerZone").hidden=!editing; resetDelete();
+  dirty=false; render(); validate(false);
+}
+function read(){
+  var title=$("f-title").value.trim(), base=editing||{};
+  var nh=$("f-noteH").value.trim(), nt=$("f-noteT").value.trim();
+  var u={
+    slug:editing?editing.slug:slugify(title),
+    date:$("f-date").value||today(),
+    type:base.type||"New feature",
+    modules:MODULES.filter(function(m){return selectedModules.indexOf(m)>-1}),
+    image:img.file?imageName():img.name,
+    imageAlt:$("f-alt").value.trim(),
+    title:title,
+    abstract:$("f-abstract").value.trim(),
+    benefits:readRows("benefits"),
+    steps:readRows("steps")
+  };
+  if(base.lead)u.lead=base.lead;
+  if(nh||nt)u.note=[nh,nt];
+  if($("f-hasLink").checked&&$("f-link").value.trim())u.link=$("f-link").value.trim();
+  return u;
+}
+
+/* ---------- validation ---------- */
+function validate(show){
+  var u=read(), miss=[];
+  if(!u.title)miss.push("title");
+  if(!img.src)miss.push("hero image");
+  if(!u.abstract)miss.push("abstract");
+  if(!u.modules.length)miss.push("at least one module");
+  if(!u.benefits.some(function(b){return b[0]}))miss.push("at least one benefit");
+  if(!u.steps.some(function(s){return s[0]}))miss.push("at least one step");
+  if($("f-hasLink").checked&&!/^https?:\/\//.test($("f-link").value.trim()))miss.push("a Learn more link starting with https://");
+  if(!editing&&u.slug&&UPDATES.some(function(x){return x.slug===u.slug}))miss.push("a title that isn't already used");
+  if(show&&miss.length)setStatus("Add "+miss.join(", ")+" before saving.","bad");
+  else if(!show)setStatus(dirty?"Unsaved changes":(editing?"Editing “"+(editing.title||"")+"”":"New update. Fill in the fields, then save."),"");
+  return miss;
+}
+function setStatus(t,cls){var s=$("status");s.textContent=t;s.className="status"+(cls?" "+cls:"")}
+
+/* ---------- abstract counter ---------- */
+function count(){var n=$("f-abstract").value.length,c=$("c-abstract");c.textContent=n+" / 240 characters recommended";c.classList.toggle("over",n>240)}
+
+/* ---------- preview ---------- */
+function tagsHtml(u){return '<div class="tags">'+(u.modules.length?u.modules.map(function(m){return '<span class="tag">'+ICONS[m]+esc(m)+'</span>'}).join(""):'<span class="tag ph">No module yet</span>')+(u.type?'<span class="tag type">'+esc(u.type)+'</span>':'')+'</div>'}
+function heroHtml(){return '<div class="pv-hero">'+(img.src?'<img src="'+esc(img.src)+'" alt="">':'Hero image, 16:9')+'</div>'}
+function ph(v,t){return v?esc(v):'<span class="ph">'+t+'</span>'}
+function render(){
+  var u=read(), h;
+  if(view==="card"){
+    h='<div class="pv-card"><div class="pv-when">'+esc(fmt(u.date))+'</div>'+heroHtml()+tagsHtml(u)+
+      '<h2>'+ph(u.title,"Title")+'</h2><p class="abs">'+ph(u.abstract,"Abstract")+'</p><span class="pv-more">Read the update →</span></div>';
+  }else{
+    var b=u.benefits.length?u.benefits:[["",""]], s=u.steps.length?u.steps:[["",""]];
+    h='<div class="pv-article"><div class="meta">'+esc(fmt(u.date))+tagsHtml(u)+'</div>'+
+      '<h1>'+ph(u.title,"Title")+'</h1><p class="lead">'+ph(u.lead||u.abstract,"Abstract")+'</p>'+heroHtml()+
+      '<h3>What this means for you</h3><ul class="benefits">'+b.map(function(x){return '<li><span><b>'+ph(x[0],"Benefit")+'</b> '+esc(x[1])+'</span></li>'}).join("")+'</ul>'+
+      '<h3>How it works</h3><ol class="steps">'+s.map(function(x){return '<li><b>'+ph(x[0],"Step")+'</b><span>'+esc(x[1])+'</span></li>'}).join("")+'</ol>'+
+      (u.note?'<div class="note"><b>'+esc(u.note[0])+'</b>'+esc(u.note[1])+'</div>':'')+
+      '<div class="cta"><span class="pv-btn">Book a demo</span>'+($("f-hasLink").checked?'<span class="pv-btn ghost">Learn more</span>':'')+'</div></div>';
+  }
+  $("pv").innerHTML=h;
+}
+function setView(v){view=v;$("tab-card").setAttribute("aria-selected",v==="card");$("tab-page").setAttribute("aria-selected",v==="page");render()}
+$("tab-card").onclick=function(){setView("card")}; $("tab-page").onclick=function(){setView("page")};
+
+function changed(){dirty=true;count();render();validate(false)}
+$("form").addEventListener("input",function(e){if(!e.target.closest(".rrow"))changed()});
+
+/* ---------- entry picker ---------- */
+function buildPicker(sel){
+  UPDATES.sort(function(a,b){return b.date.localeCompare(a.date)});
+  $("entryPick").innerHTML='<option value="">New update</option>'+UPDATES.map(function(u){return '<option value="'+esc(u.slug)+'">'+esc(fmt(u.date)+" · "+u.title)+'</option>'}).join("");
+  $("entryPick").value=sel||"";
+}
+$("entryPick").onchange=function(){var s=this.value;editing=UPDATES.filter(function(u){return u.slug===s})[0]||null;fill(editing||blank())};
+$("newBtn").onclick=function(){editing=null;buildPicker("");fill(blank());$("f-title").focus()};
+$("resetBtn").onclick=function(){fill(editing||blank())};
+
+/* ---------- delete (inline confirm) ---------- */
+function resetDelete(){$("delWrap").innerHTML='<button class="btn btn-danger btn-sm" type="button" id="delBtn">Delete update</button>';$("delBtn").onclick=askDelete}
+function askDelete(){
+  $("delWrap").innerHTML='<p style="margin-bottom:10px">Delete “'+esc(editing.title)+'” from the changelog?</p><div style="display:flex;gap:8px"><button class="btn btn-danger btn-sm" type="button" id="delYes">Yes, delete</button><button class="btn btn-ghost btn-sm" type="button" id="delNo">Keep it</button></div>';
+  $("delNo").onclick=resetDelete;
+  $("delYes").onclick=function(){var t=editing.title;UPDATES=UPDATES.filter(function(u){return u!==editing});editing=null;buildPicker("");fill(blank());openSheet("Deleted “"+t+"”.",false)};
+}
+
+/* ---------- save ---------- */
+$("saveBtn").onclick=function(){
+  if(validate(true).length)return;
+  var u=read();
+  if(editing){var i=UPDATES.indexOf(editing);UPDATES[i]=u}else UPDATES.push(u);
+  editing=u; dirty=false; buildPicker(u.slug); $("dangerZone").hidden=false; resetDelete();
+  openSheet("Saved “"+u.title+"”.",!!img.file);
+  setStatus("Saved. Download updates.json to publish.","good");
+};
+function json(){return JSON.stringify(UPDATES,null,2)+"\n"}
+function openSheet(intro,newImage){
+  $("sheetIntro").innerHTML=esc(intro)+" Put it live in "+(newImage?"three":"two")+" steps:";
+  $("sheetSteps").innerHTML=
+    '<li>Download <code>updates.json</code>'+(newImage?' and the hero image (<code>'+esc(imageName())+'</code>)':'')+'.</li>'+
+    '<li>In the GitHub repo, choose <b>Add file → Upload files</b>, drop '+(newImage?'both files':'the file')+' in, and commit. It replaces the old <code>updates.json</code>.</li>'+
+    (newImage?'<li>Vercel publishes the change automatically within a minute.</li>':'<li>Vercel publishes the change within a minute.</li>');
+  $("dlImg2").hidden=!newImage; $("jsonOut").value=json(); $("sheet").hidden=false; $("dlJson").focus();
+}
+$("dlImg2").onclick=function(){$("dlImg").onclick()};
+$("closeSheet").onclick=function(){$("sheet").hidden=true};
+$("sheet").onclick=function(e){if(e.target===this)this.hidden=true};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")$("sheet").hidden=true});
+$("dlJson").onclick=function(){download(new Blob([json()],{type:"application/json"}),"updates.json")};
+$("cpJson").onclick=function(){
+  var t=$("jsonOut");
+  navigator.clipboard.writeText(t.value).then(function(){$("cpJson").textContent="Copied"},function(){t.focus();t.select();$("cpJson").textContent="Selected. Press Ctrl/Cmd+C"});
+  setTimeout(function(){$("cpJson").textContent="Copy JSON"},2500);
+};
+function download(blob,name){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+
+addEventListener("beforeunload",function(e){if(dirty){e.preventDefault();e.returnValue=""}});
+
+/* ---------- boot ---------- */
+fetch("updates.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){UPDATES=d;start()}).catch(function(){UPDATES=[];start();setStatus("Couldn't load updates.json, so you're starting from an empty list.","bad")});
+function start(){buildPicker("");fill(blank());count()}
+</script>
+</body>
+</html>
