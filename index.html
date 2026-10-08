@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="en">
 <head>
@@ -174,62 +173,13 @@ var ICONS={
 };
 var MODULES=["Communications","Learning","Artificial Intelligence","Operations","Scheduling"];
 
-/* Updates, newest first. To add one: copy an object, give it a new slug, date and image. */
-var UPDATES=[
-  {
-    slug:"ai-colleague",
-    date:"2026-08-06",
-    type:"New feature",
-    modules:["Artificial Intelligence"],
-    image:"hero-ai-colleague.jpg",
-    imageAlt:"A bartender checks the All Gravy app on his phone during a shift",
-    title:"Meet your AI Colleague: instant answers on every shift",
-    abstract:"Your team can now ask questions in plain words and get the right answer in seconds, straight from your own handbooks, menus and policies. Anything it can't answer goes to a manager.",
-    lead:"Never keep a guest waiting on “let me check.” From today, every employee has a colleague who knows your handbooks, menus and policies by heart, and is there on every shift.",
-    benefits:[
-      ["Confident staff, happier guests.","Allergens, menu items, payment options: your team gets the answer on the spot, without leaving the floor to find a manager."],
-      ["Managers get their time back.","No more answering the same question fifty times a week. Save up to 80% of the time spent on routine questions."],
-      ["One answer, every location.","Update a policy or menu once, and every answer reflects it straight away."],
-      ["See what your team needs to learn.","The questions people ask most show you where to focus your training."]
-    ],
-    steps:[
-      ["Ask in plain words","Open the AI Colleague in the All Gravy app and type a question, like “Does the halloumi wrap contain nuts?”"],
-      ["Get a short answer, with a source","It searches your own content and replies in a sentence, with a link to where the answer came from."],
-      ["Unknowns go to a human","If the answer isn't in your content, it passes the question to a manager and flags what's missing. Add it once, and next time it can answer."]
-    ],
-    note:["Make it your own","Choose its name and avatar, and train it to speak in your brand voice. Next up: doing, not just answering, like swapping a shift or booking time off."],
-    link:"https://www.allgravy.com/platform/ai-colleague"
-  },
-  {
-    slug:"learning-platform",
-    date:"2026-07-09",
-    type:"New feature",
-    modules:["Learning","Artificial Intelligence"],
-    image:"hero-learning-platform.jpg",
-    imageAlt:"The All Gravy Learning Platform on a phone, showing a quiz question and earned badges",
-    title:"The new Learning Platform: training your team actually finishes",
-    abstract:"Bite-sized lessons on any phone, games and quizzes, and Duolingo-style learning journeys. Build a course in minutes with help from AI, and keep track of mandatory training in one place.",
-    lead:"Get new starters up to speed faster and keep every location compliant, with training that feels more like a game than a chore.",
-    benefits:[
-      ["New starters ramp up faster.","A visual learning journey shows everyone exactly what to learn next and how far they've come."],
-      ["Training fits between shifts.","Lessons take 5 to 15 minutes and work on any phone, so nobody has to block out a training day."],
-      ["Anyone can share what they know.","Your best chef or bar manager can build a course without technical skills."],
-      ["Always audit-ready.","An always-updated overview of mandatory training and completion rates means nothing slips through."]
-    ],
-    steps:[
-      ["Build a course","Drag and drop lessons, quizzes and puzzles into a course. The AI Assistant helps you draft the content."],
-      ["Your team learns on the go","Each person follows their own learning journey, with results and tips straight after every game, and achievements to unlock along the way."],
-      ["Track progress and compliance","See completion rates for mandatory training across teams and locations, and follow up where it's needed."]
-    ],
-    note:["Works with your onboarding","Pair learning journeys with onboarding so new starters get the right courses from day one."],
-    link:"https://www.allgravy.com/platform/lms"
-  }
-];
+/* Updates live in updates.json (written by admin.html). Sorted newest first on load. */
+var UPDATES=[];
 
 var fmt=function(iso){var d=new Date(iso+"T12:00:00");return d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})};
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
 function tags(u){
-  return '<div class="tags">'+u.modules.map(function(m){return '<span class="tag">'+ICONS[m]+esc(m)+'</span>'}).join("")+'<span class="tag type">'+esc(u.type)+'</span></div>';
+  return '<div class="tags">'+u.modules.map(function(m){return '<span class="tag">'+ICONS[m]+esc(m)+'</span>'}).join("")+(u.type?'<span class="tag type">'+esc(u.type)+'</span>':'')+'</div>';
 }
 
 /* Filters */
@@ -268,14 +218,14 @@ function renderDetail(u){
     '<article class="article">'+
       '<div class="meta"><time datetime="'+u.date+'">'+fmt(u.date)+'</time>'+tags(u)+'</div>'+
       '<h1>'+esc(u.title)+'</h1>'+
-      '<p class="lead">'+esc(u.lead)+'</p>'+
-      '<div class="hero"><img src="'+u.image+'" alt="'+esc(u.imageAlt)+'"></div>'+
+      '<p class="lead">'+esc(u.lead||u.abstract)+'</p>'+
+      '<div class="hero"><img src="'+u.image+'" alt="'+esc(u.imageAlt||'')+'"></div>'+
       '<h3>What this means for you</h3>'+
       '<ul class="benefits">'+u.benefits.map(function(b){return '<li><span><b>'+esc(b[0])+'</b> '+esc(b[1])+'</span></li>'}).join("")+'</ul>'+
       '<h3>How it works</h3>'+
       '<ol class="steps">'+u.steps.map(function(s){return '<li><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></li>'}).join("")+'</ol>'+
-      '<div class="note"><b>'+esc(u.note[0])+'</b>'+esc(u.note[1])+'</div>'+
-      '<div class="cta"><a class="btn" href="https://www.allgravy.com/book-meeting">Book a demo</a><a class="btn-ghost" href="'+u.link+'">Learn more</a></div>'+
+      (u.note&&(u.note[0]||u.note[1])?'<div class="note"><b>'+esc(u.note[0])+'</b>'+esc(u.note[1])+'</div>':'')+
+      '<div class="cta"><a class="btn" href="https://www.allgravy.com/book-meeting">Book a demo</a>'+(u.link?'<a class="btn-ghost" href="'+esc(u.link)+'">Learn more</a>':'')+'</div>'+
     '</article>'+
     '<nav class="pager" aria-label="More updates">'+
       (older?'<a class="prev" href="#'+older.slug+'"><small>← Older</small><b>'+esc(older.title)+'</b></a>':'')+
@@ -291,10 +241,14 @@ function route(){
   if(u){renderDetail(u);document.title=u.title+" · All Gravy Product Updates";window.scrollTo(0,0)}
   else{document.title="All Gravy Product Updates"}
 }
-renderList(); route();
 addEventListener("hashchange",route);
+fetch("updates.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(data){
+  UPDATES=data.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
+  renderList(); route();
+}).catch(function(){
+  document.getElementById("timeline").innerHTML="";
+  var e=document.getElementById("empty"); e.textContent="Updates couldn't load. Refresh the page to try again."; e.hidden=false;
+});
 </script>
 </body>
 </html>
-
-</body></html>
