@@ -1,5 +1,50 @@
 [
   {
+    "slug": "statoil-peeps-are-great",
+    "date": "2026-10-07",
+    "type": "New feature",
+    "modules": [
+      "Learning",
+      "Operations"
+    ],
+    "image": "hero-statoil-peeps-are-great.jpg",
+    "imageAlt": "Statoilers",
+    "title": "Statoil peeps are great",
+    "abstract": "Read this fun product update about Statoilers using All Gravy!",
+    "benefits": [
+      [
+        "Statoil",
+        "hello world"
+      ],
+      [
+        "Rued is great",
+        "hello world"
+      ],
+      [
+        "Hello All Gravy",
+        "hello world"
+      ]
+    ],
+    "steps": [
+      [
+        "bla",
+        "jbdsjkfs"
+      ],
+      [
+        "bla bla",
+        "adawewd"
+      ],
+      [
+        "bla bla bla",
+        "sadfsaaefeafefa"
+      ]
+    ],
+    "note": [
+      "Give Statoil a spin?",
+      "Book a time with our amazing team today!"
+    ]
+  },
+  {
     "slug": "ai-colleague",
     "date": "2026-08-06",
     "type": "New feature",
